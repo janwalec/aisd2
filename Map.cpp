@@ -6,10 +6,13 @@ Map::Map(int w, int h) {
 	this->cityCount = 0;
 	
 	map = new char* [h];
-	cities = new City * [h];
+	cities = new City** [h];
 	for (int i = 0; i < h; i++) {
 		map[i] = new char[w];
-		cities[i] = new City[w];
+		cities[i] = new City* [w];
+		for (int j = 0; j < w; j++) {
+			cities[i][j] = nullptr;
+		}
 	}
 }
 
@@ -42,8 +45,8 @@ void Map::printCitiesNames() {
 	int counter = 1;
 	for (int i = 0; i < h; i++) {
 		for (int j = 0; j < w; j++) {
-			if (cities[i][j].cityType == 1) {
-				cout << counter++ << ". " << cities[i][j].name << '\n';
+			if (cities[i][j] != nullptr) {
+				cout << counter++ << ". " << cities[i][j]->name << '\n';
 				//cout << "x: " << j << " y: " << i << "\n\n"; //coordinates, uncomment to get this
 			}
 		}
@@ -98,13 +101,12 @@ void Map::markCrossRoads() {
 				}
 				if (roadsNeighbouring > 2) {
 					map[i][j] = '*';
-					cities[i][j].cityType = 0; //set this city as blank city
+					cities[i][j] = new City;
 				}
 			}
 		}
 	}
 }
-
 
 void Map::processCities() {
 	/*
@@ -116,46 +118,38 @@ void Map::processCities() {
 
 	[y+1 x-1]	[y+1   x]	[y+1 x+1]
 	*/
-	char curr;
 	for (int y = 0; y < h; y++) {
 		for (int x = 0; x < w; x++) {
 			if (map[y][x] == '*') {
-				cities[y][x].cityType = 1;
+				cities[y][x] = new City;
 				if (y - 1 >= 0) { //upper row
 					if (x - 1 >= 0) {
-						curr = map[y - 1][x - 1];
-						if ((curr >= 'A' && curr <= 'Z') || (curr >= '0' && curr <= '9')) {
-							cities[y][x].name = readName(map, y - 1, x - 1, w);
+						if (map[y - 1][x - 1] >= '0') {
+							cities[y][x]->name = readName(map, y - 1, x - 1, w);
 							continue;
 						}
 					}
 					if (x + 1 <= w) {
-						curr = map[y - 1][x + 1];
-						if ((curr >= 'A' && curr <= 'Z') || (curr >= '0' && curr <= '9')) {
-							cities[y][x].name = readName(map, y - 1, x + 1, w);
+						if (map[y - 1][x + 1] >= '0') {
+							cities[y][x]->name = readName(map, y - 1, x + 1, w);
 							continue;
 						}
 					}
-					curr = map[y - 1][x];
-					if ((curr >= 'A' && curr <= 'Z') || (curr >= '0' && curr <= '9')) {
-						cities[y][x].name = readName(map, y - 1, x, w);
+					if (map[y - 1][x] >= '0') {
+						cities[y][x]->name = readName(map, y - 1, x, w);
 						continue;
 					}
-
-
 				}
 				if (x - 1 >= 0) {
-					curr = map[y][x - 1];
-					if ((curr >= 'A' && curr <= 'Z') || (curr >= '0' && curr <= '9')) {
-						cities[y][x].name = readName(map, y, x - 1, w);
+					if (map[y][x - 1] >= '0') {
+						cities[y][x]->name = readName(map, y, x - 1, w);
 						continue;
 
 					}
 				}
 				if (x + 1 <= w) {
-					curr = map[y][x + 1];
-					if ((curr >= 'A' && curr <= 'Z') || (curr >= '0' && curr <= '9')) {
-						cities[y][x].name = readName(map, y, x + 1, w);
+					if (map[y][x + 1] >= '0') {
+						cities[y][x]->name = readName(map, y, x + 1, w);
 						continue;
 
 					}
@@ -163,24 +157,21 @@ void Map::processCities() {
 				}
 				if (y + 1 <= h) {
 					if (x - 1 >= 0) {
-						curr = map[y + 1][x - 1];
-						if ((curr >= 'A' && curr <= 'Z') || (curr >= '0' && curr <= '9')) {
-							cities[y][x].name = readName(map, y + 1, x - 1, w);
+						if (map[y + 1][x - 1] >= '0') {
+							cities[y][x]->name = readName(map, y + 1, x - 1, w);
 							continue;
 
 						}
 					}
 					if (x + 1 <= w) {
-						curr = map[y + 1][x + 1];
-						if ((curr >= 'A' && curr <= 'Z') || (curr >= '0' && curr <= '9')) {
-							cities[y][x].name = readName(map, y + 1, x + 1, w);
+						if (map[y + 1][x + 1] >= '0') {
+							cities[y][x]->name = readName(map, y + 1, x + 1, w);
 							continue;
 
 						}
 					}
-					curr = map[y + 1][x];
-					if ((curr >= 'A' && curr <= 'Z') || (curr >= '0' && curr <= '9')) {
-						cities[y][x].name = readName(map, y + 1, x, w);
+					if (map[y + 1][x] >= '0') {
+						cities[y][x]->name = readName(map, y + 1, x, w);
 						continue;
 
 					}

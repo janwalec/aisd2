@@ -2,6 +2,10 @@
 
 City::City() {
 	MyString noName;
-	this->cityType = -1;
+	neighbourList = new ConnectionList;
 	this->name = noName;
+}
+
+City::~City() {
+	delete neighbourList;
 }

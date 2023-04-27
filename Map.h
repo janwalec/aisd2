@@ -10,7 +10,7 @@ class Map {
 	void markCrossRoads();
 	MyString readName(char** map, int y, int x, int sizeX);
 public:
-	City** cities;
+	City*** cities;
 	char** map;
 	int h, w, cityCount;
 	Map(int w, int h);

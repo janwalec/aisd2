@@ -1,5 +1,9 @@
 #pragma once
 #include "City.h"
+
+struct City;
+class ConnectionList;
+
 class ConnectionNode {
 public:
 	City* city;
@@ -7,4 +11,3 @@ public:
 	int road;
 	ConnectionNode(City* c, int r);
 };
-

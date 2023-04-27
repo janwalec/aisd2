@@ -1,35 +1,47 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "MyString.h"
 
+MyString::MyString() : str{ nullptr } {
+    str = new char[1];
+    str[0] = '\0';
+    this->length = 0;
+}
+
+MyString::MyString(char* val) {
+    if (val == nullptr) {
+        str = new char[1];
+        str[0] = '\0';
+        this->length = 0;
+    }
+    else {
+        int l = strlen(val);
+        str = new char[l + 1];
+        strcpy(str, val);
+        this->length = l;
+    }
+}
+
+MyString::MyString(const MyString& source) {
+    str = new char[source.length + 1];
+    this->length = source.length;
+    strcpy(str, source.str);
+}
+
+///construction
+///
+///
+/// 
+///operators
 
 MyString& MyString::operator=(const MyString& rhs) {
     if (this == &rhs) {
         return *this;
     }
     delete[] str;
-    str = new char[strlen(rhs.str) + 1];
+    str = new char[rhs.length + 1];
     strcpy(str, rhs.str);
+    this->length = rhs.length;
     return *this;
-}
-
-
-MyString operator+(const MyString& lhs, const MyString& rhs) {
-    int length = strlen(lhs.str) + strlen(rhs.str);
-    char* buff = new char[length + 1];
-    strcpy(buff, lhs.str);
-    strcat(buff, rhs.str);
-    MyString temp{ buff };
-    delete[] buff;
-    return temp;
-}
-
-istream& operator>>(istream& is, MyString& obj) {
-    char* buff = new char[1000];
-    memset(&buff[0], 0, sizeof(buff));
-    is >> buff;
-    obj = MyString{ buff };
-    delete[] buff;
-    return is;
 }
 
 ostream& operator<<(ostream& os, const MyString& obj) {
@@ -38,39 +50,16 @@ ostream& operator<<(ostream& os, const MyString& obj) {
 }
 
 bool operator==(const MyString& lhs, const MyString& rhs) {
-    if (strlen(lhs.str) != strlen(rhs.str)) {
+    if (lhs.length != rhs.length) {
         return false;
     }
-
-    for (int i = 0; i < strlen(lhs.str); i++) {
+    for (int i = 0; i < lhs.length; i++) {
         if (lhs.str[i] != rhs.str[i]) {
             return false;
         }
     }
-        
     return true;
 }
-
-MyString::MyString() : str{ nullptr } {
-    str = new char[1];
-    str[0] = '\0';
-}
-
-MyString::MyString(char* val) {
-    if (val == nullptr) {
-        str = new char[1];
-        str[0] = '\0';
-    } else {
-        str = new char[strlen(val) + 1];
-        strcpy(str, val);
-    }
-}
-
-MyString::MyString(const MyString& source) {
-    str = new char[strlen(source.str) + 1];
-    strcpy(str, source.str);
-}
-
 
 MyString::~MyString() {
     delete[] str;

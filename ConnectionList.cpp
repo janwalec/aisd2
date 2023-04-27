@@ -31,3 +31,17 @@ void ConnectionList::addConnection(City* city, int road) {
 	temp->next = nullptr;
 	numberOfConnections++;
 }
+
+void ConnectionList::printList() {
+	ConnectionNode* temp = head;
+	while (temp != nullptr) {
+		if (temp->city->name.length == 0) {
+			cout << "EMPTYCITY, DISTANCE: " << temp->road << '\n';
+		}
+		else {
+			cout << temp->city->name << " distance: " << temp->road << '\n';
+		}
+		
+		temp = temp->next;
+	}
+}

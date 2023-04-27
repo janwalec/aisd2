@@ -1,10 +1,13 @@
 #pragma once
 #include "MyString.h"
+#include "ConnectionList.h"
+class ConnectionList;
+class ConnectionNode;
+
 struct City {
 public:
 	MyString name;
-	int cityType; //-1 free;	0 crossroad;	1 real city with name
+	ConnectionList* neighbourList;
 	City();
-	//List neighbours
+	~City();
 };
-
