@@ -1,3 +1,6 @@
+/// <inspiration>
+/// https://www.geeksforgeeks.org/
+/// </inspiration>
 #pragma once
 #include <iostream>
 #include <string.h>
@@ -8,12 +11,11 @@ public:
     char* str;
     int length;
     MyString();
-    MyString(char* val);
-    MyString(const MyString& source);
-
+    MyString(char* chararray);
+    MyString(const MyString& string);
     MyString& operator=(const MyString& rhs);
     friend bool operator==(const MyString& lhs, const MyString& rhs);
-    friend ostream& operator<<(ostream& os, const MyString& obj);
+    friend ostream& operator<<(ostream& os, const MyString& string);
 
     ~MyString();
 };

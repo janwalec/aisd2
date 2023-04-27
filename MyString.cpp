@@ -7,24 +7,24 @@ MyString::MyString() : str{ nullptr } {
     this->length = 0;
 }
 
-MyString::MyString(char* val) {
-    if (val == nullptr) {
+MyString::MyString(char* chararray) {
+    if (chararray == nullptr) {
         str = new char[1];
         str[0] = '\0';
         this->length = 0;
     }
     else {
-        int l = strlen(val);
+        int l = strlen(chararray);
         str = new char[l + 1];
-        strcpy(str, val);
+        strcpy(str, chararray);
         this->length = l;
     }
 }
 
-MyString::MyString(const MyString& source) {
-    str = new char[source.length + 1];
-    this->length = source.length;
-    strcpy(str, source.str);
+MyString::MyString(const MyString& string) {
+    str = new char[string.length + 1];
+    this->length = string.length;
+    strcpy(str, string.str);
 }
 
 ///construction
@@ -44,8 +44,8 @@ MyString& MyString::operator=(const MyString& rhs) {
     return *this;
 }
 
-ostream& operator<<(ostream& os, const MyString& obj) {
-    os << obj.str;
+ostream& operator<<(ostream& os, const MyString& string) {
+    os << string.str;
     return os;
 }
 

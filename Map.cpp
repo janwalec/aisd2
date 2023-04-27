@@ -53,15 +53,82 @@ void Map::printCitiesNames() {
 	}
 }
 
+void Map::printCityInfoAndNeighbours() {
+	for (int i = 0; i < h; i++) {
+		for (int j = 0; j < w; j++) {
+			if (cities[i][j] != nullptr) {
+				cout << "\n\n---------------------------";
+				cout << "\ny: " << i << " x: " << j << "\nNAME: -" << cities[i][j]->name << '\n';
+				cout << "connections number: " << cities[i][j]->neighbourList->numberOfConnections << '\n';
+				cities[i][j]->neighbourList->printList();
+			}
+		}
+	}
+}
+
 void Map::countCitiesAndCreateArr() {
 	for (int i = 0; i < h; i++) {
 		for (int j = 0; j < w; j++) {
-			if (map[i][j] == '*') {
+			if (map[i][j] == CITY_SIGN) {
 				cityCount++;
 			}
 		}
 	}
 	processCities();
+}
+
+void Map::findRoadsFromCities() {
+	char curr;
+	for (int i = 0; i < h; i++) {
+		for (int j = 0; j < w; j++) {
+			if (cities[i][j] != nullptr) {
+				//lower
+				if (i > 0) {
+					curr = map[i - 1][j];
+					if (curr == ROAD_SIGN) {
+						findNeighbour(i, j, i - 1, j);
+					}
+					if (curr == CITY_SIGN) {
+						cities[i][j]->neighbourList->addConnection(cities[i - 1][j], 1);
+						continue;
+					}
+				}
+				//upper
+				if (i < h - 1) {
+					curr = map[i + 1][j];
+					if (curr == ROAD_SIGN) {
+						findNeighbour(i, j, i + 1, j);
+					}
+					if (curr == CITY_SIGN) {
+						cities[i][j]->neighbourList->addConnection(cities[i + 1][j], 1);
+						continue;
+					}
+				}
+				//left
+				if (j > 0) {
+					curr = map[i][j - 1];
+					if (curr == ROAD_SIGN) {
+						findNeighbour(i, j, i, j - 1);
+					}
+					if (curr == CITY_SIGN) {
+						cities[i][j]->neighbourList->addConnection(cities[i][j - 1], 1);
+						continue;
+					}
+				}
+				//right
+				if (j < w - 1) {
+					curr = map[i][j + 1];
+					if (curr == ROAD_SIGN) {
+						findNeighbour(i, j, i, j + 1);
+					}
+					if (curr == CITY_SIGN) {
+						cities[i][j]->neighbourList->addConnection(cities[i][j + 1], 1);
+						continue;
+					}
+				}
+			}
+		}
+	}
 }
 
 void Map::markCrossRoads() {
@@ -74,15 +141,15 @@ void Map::markCrossRoads() {
 				int x;
 				x = 0;
 			}
-			if (map[i][j] == '#') {	
+			if (map[i][j] == ROAD_SIGN) {	
 				roadsNeighbouring = 0; // if roadsNeighbouring reach 3 or 4, it will be the crossroad
 				if (i > 0) { //check upper square
-					if (map[i - 1][j] == '#' || map[i - 1][j] == '*') {
+					if (map[i - 1][j] == ROAD_SIGN || map[i - 1][j] == CITY_SIGN) {
 						roadsNeighbouring++;
 					}
 				}
 				if (i < maxH) { //check bottom square
-					if (map[i + 1][j] == '#' || map[i + 1][j] == '*') {
+					if (map[i + 1][j] == ROAD_SIGN || map[i + 1][j] == CITY_SIGN) {
 						roadsNeighbouring++;
 					}
 				}
@@ -90,19 +157,94 @@ void Map::markCrossRoads() {
 					continue; //because there will no more than 2 roads
 				}
 				if (j > 0) { //check left square
-					if (map[i][j - 1] == '#' || map[i][j - 1] == '*') {
+					if (map[i][j - 1] == ROAD_SIGN || map[i][j - 1] == CITY_SIGN) {
 						roadsNeighbouring++;
 					}
 				}
 				if (j < maxW) { //check right square
-					if (map[i][j + 1] == '#' || map[i][j + 1] == '*') {
+					if (map[i][j + 1] == ROAD_SIGN || map[i][j + 1] == CITY_SIGN) {
 						roadsNeighbouring++;
 					}
 				}
 				if (roadsNeighbouring > 2) {
-					map[i][j] = '*';
+					map[i][j] = CITY_SIGN;
 					cities[i][j] = new City;
 				}
+			}
+		}
+	}
+}
+
+void Map::findNeighbour(int lastY, int lastX, int currentY, int currentX) {
+	//lastXY is city possition		currentXY is first # position
+	int mainCityY = lastY;
+	int mainCityX = lastX;
+	int length = 1;
+	// serach for next # return true if * is met		or false if road is over
+	char curr;
+	for (;;) {
+		//upper
+		if (currentY > 0 && currentY - 1 != lastY) {
+			curr = map[currentY - 1][currentX];
+			if (curr == ROAD_SIGN) {
+				lastY = currentY;
+				lastX = currentX;
+				currentY--;
+				length++;
+				continue;
+			}
+			if (curr == CITY_SIGN) {
+				length++;
+				cities[mainCityY][mainCityX]->neighbourList->addConnection(cities[currentY - 1][currentX], length);
+				return;
+			}
+		}
+		//lower
+		if (currentY < h - 1 && currentY + 1 != lastY) {
+			curr = map[currentY + 1][currentX];
+			if (curr == ROAD_SIGN) {
+				lastY = currentY;
+				lastX = currentX;
+				currentY++;
+				length++;
+				continue;
+			}
+			if (curr == CITY_SIGN) {
+				length++;
+				cities[mainCityY][mainCityX]->neighbourList->addConnection(cities[currentY + 1][currentX], length);
+				return;
+			}
+		}
+		//left
+		if (currentX > 0 && currentX - 1 != lastX) {
+			curr = map[currentY][currentX - 1];
+			if (curr == ROAD_SIGN) {
+				lastX = currentX;
+				lastY = currentY;
+				currentX--;
+				length++;
+				continue;
+			}
+			if (curr == CITY_SIGN) {
+				length++;
+				cities[mainCityY][mainCityX]->neighbourList->addConnection(cities[currentY][currentX - 1], length);
+				return;
+			}
+		}
+		//right
+		if (currentX < w - 1 && currentX + 1 != lastX) {
+			curr = map[currentY][currentX + 1];
+			if (curr == ROAD_SIGN) {
+				lastX = currentX;
+				lastY = currentY;
+				currentX++;
+				length++;
+				continue;
+			}
+			if (curr == CITY_SIGN) {
+				length++;
+				cities[mainCityY][mainCityX]->neighbourList->addConnection(cities[currentY][currentX + 1], length);
+				return;
 			}
 		}
 	}
@@ -120,7 +262,7 @@ void Map::processCities() {
 	*/
 	for (int y = 0; y < h; y++) {
 		for (int x = 0; x < w; x++) {
-			if (map[y][x] == '*') {
+			if (map[y][x] == CITY_SIGN) {
 				cities[y][x] = new City;
 				if (y - 1 >= 0) { //upper row
 					if (x - 1 >= 0) {
