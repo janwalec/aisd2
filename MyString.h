@@ -16,6 +16,7 @@ public:
     MyString& operator=(const MyString& rhs);
     friend bool operator==(const MyString& lhs, const MyString& rhs);
     friend ostream& operator<<(ostream& os, const MyString& string);
+    friend istream& operator>>(istream& istream, MyString& string);
 
     ~MyString();
 };

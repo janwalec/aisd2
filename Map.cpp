@@ -30,6 +30,25 @@ void Map::read() {
 	}
 }
 
+void Map::readFlights(int howMany) {
+	int firstHashIndex, secondHashIndex, flightDuration;
+	MyString firstCityName, secondCityName;
+	City* firstCity;
+	City* secondCity;
+
+	for (int i = 0; i < howMany; i++) {
+		cin >> firstCityName >> secondCityName >> flightDuration;
+		firstHashIndex = getIndexFromCityName(firstCityName);
+		secondHashIndex = getIndexFromCityName(secondCityName);
+		firstCity = this->hashmap[firstHashIndex].searchForCity(firstCityName);
+		secondCity = this->hashmap[secondHashIndex].searchForCity(secondCityName);
+		if (firstCity != nullptr && secondCity != nullptr) {
+			firstCity->neighbourList->addConnection(secondCity, flightDuration);
+			continue;
+		}
+	}
+}
+
 void Map::print() {
 	cout << "\n\n\t\t\tmap\n";
 	for (int i = 0; i < h; i++) {
@@ -131,6 +150,37 @@ void Map::findRoadsFromCities() {
 	}
 }
 
+unsigned long Map::getIndexFromCityName(MyString name) { //hash function	http://www.cse.yorku.ca/~oz/hash.html
+	unsigned char* temp = (unsigned char*)name.str;
+	int i;
+	unsigned long hash = 6721;
+	while (i = *temp++) {
+		hash = ((hash << 5) + hash) + i;
+	}
+	return (hash % HASHMAP_SIZE);
+}
+
+
+void Map::createHashMap() {
+	for (int i = 0; i < h; i++) {
+		for (int j = 0; j < w; j++) {
+			if (cities[i][j] != nullptr) {
+				hashmap[getIndexFromCityName(cities[i][j]->name)].addConnection(cities[i][j], 0);
+			}
+		}
+	}
+}
+
+void Map::printHashMap() {
+	int cntr = 1;
+	for (int i = 0; i < HASHMAP_SIZE; i++) {
+		if (hashmap[i].head != nullptr) {
+			cout << cntr++ << ". \n";
+			hashmap[i].printList();
+		}	
+	}
+}
+
 void Map::markCrossRoads() {
 	int roadsNeighbouring;
 	int maxH = h - 1;
@@ -169,6 +219,7 @@ void Map::markCrossRoads() {
 				if (roadsNeighbouring > 2) {
 					map[i][j] = CITY_SIGN;
 					cities[i][j] = new City;
+					this->cityCount++;
 				}
 			}
 		}
@@ -321,6 +372,7 @@ void Map::processCities() {
 			}
 		}
 	}
+	createHashMap();
 	markCrossRoads();
 }
 

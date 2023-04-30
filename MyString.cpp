@@ -14,10 +14,9 @@ MyString::MyString(char* chararray) {
         this->length = 0;
     }
     else {
-        int l = strlen(chararray);
-        str = new char[l + 1];
+        this-> length = strlen(chararray);
+        str = new char[length + 1];
         strcpy(str, chararray);
-        this->length = l;
     }
 }
 
@@ -49,6 +48,15 @@ ostream& operator<<(ostream& os, const MyString& string) {
     return os;
 }
 
+istream& operator>>(istream& istream, MyString& string) {
+    char* buff = new char[1000];
+    memset(&buff[0], 0, sizeof(buff));
+    istream >> buff;
+    string = MyString{ buff };
+    delete[] buff;
+    return istream;
+}
+
 bool operator==(const MyString& lhs, const MyString& rhs) {
     if (lhs.length != rhs.length) {
         return false;
@@ -60,6 +68,8 @@ bool operator==(const MyString& lhs, const MyString& rhs) {
     }
     return true;
 }
+
+
 
 MyString::~MyString() {
     delete[] str;

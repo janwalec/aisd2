@@ -9,6 +9,7 @@ public:
 	int numberOfConnections;
 	ConnectionList();
 	~ConnectionList();
+	City* searchForCity(MyString n);
 	void addConnection(City* city, int road);
 	void printList();
 };

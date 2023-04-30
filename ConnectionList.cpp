@@ -6,14 +6,25 @@ ConnectionList::ConnectionList() {
 }
 
 ConnectionList::~ConnectionList() {
-	if(head != nullptr) {
-		ConnectionNode* temp1 = head;
-		ConnectionNode* temp2 = temp1;
-		while (temp2 != nullptr) {
-			temp2 = temp1->next;
-			delete temp1;
-		}
+	ConnectionNode* prev;
+	while (head != nullptr) {
+		prev = head;
+		head = head->next;
+		delete prev;
 	}
+}
+
+City* ConnectionList::searchForCity(MyString n) {
+	ConnectionNode* temp = head;
+	while (temp != nullptr) {
+		if (temp->city->name.length == n.length) {
+			if (temp->city->name == n) {
+				return temp->city;
+			}
+		}
+		temp = temp->next;
+	}
+	return nullptr;
 }
 
 void ConnectionList::addConnection(City* city, int road) {
