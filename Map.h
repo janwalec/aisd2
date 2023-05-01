@@ -14,7 +14,7 @@ public:
 	City*** cities;
 	char** map;
 	ConnectionList hashmap[HASHMAP_SIZE];
-	int h, w, cityCount;
+	int h, w, cityCount, numberOfRealCities;
 	Map(int w, int h);
 	void read();
 	void readFlights(int howMany);

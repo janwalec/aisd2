@@ -17,7 +17,9 @@ public:
 	void pushUp(int index);
 	void pushDown(int index);
 	City* pop();
-	void setRoot(int index);
+	void setDistance(int index, int newDistance);
+	void processDistancesOnHeap();
+	void search(City* start, City* end);
 
 	//visualisation
 	void printHeap();

@@ -4,6 +4,7 @@ Map::Map(int w, int h) {
 	this->h = h;
 	this->w = w;
 	this->cityCount = 0;
+	this->numberOfRealCities = 0;
 	
 	map = new char* [h];
 	cities = new City** [h];
@@ -90,6 +91,7 @@ void Map::countCitiesAndCreateArr() {
 		for (int j = 0; j < w; j++) {
 			if (map[i][j] == CITY_SIGN) {
 				cityCount++;
+				numberOfRealCities++;
 			}
 		}
 	}
@@ -109,7 +111,6 @@ void Map::findRoadsFromCities() {
 					}
 					if (curr == CITY_SIGN) {
 						cities[i][j]->neighbourList->addConnection(cities[i - 1][j], 1);
-						continue;
 					}
 				}
 				//upper
@@ -120,7 +121,6 @@ void Map::findRoadsFromCities() {
 					}
 					if (curr == CITY_SIGN) {
 						cities[i][j]->neighbourList->addConnection(cities[i + 1][j], 1);
-						continue;
 					}
 				}
 				//left
@@ -131,7 +131,6 @@ void Map::findRoadsFromCities() {
 					}
 					if (curr == CITY_SIGN) {
 						cities[i][j]->neighbourList->addConnection(cities[i][j - 1], 1);
-						continue;
 					}
 				}
 				//right
@@ -142,7 +141,6 @@ void Map::findRoadsFromCities() {
 					}
 					if (curr == CITY_SIGN) {
 						cities[i][j]->neighbourList->addConnection(cities[i][j + 1], 1);
-						continue;
 					}
 				}
 			}
@@ -298,6 +296,7 @@ void Map::findNeighbour(int lastY, int lastX, int currentY, int currentX) {
 				return;
 			}
 		}
+		return;
 	}
 }
 

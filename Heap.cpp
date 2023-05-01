@@ -19,7 +19,7 @@ Heap::Heap(Map* map, int size) {
 void Heap::resetHeap() {
 	this->size = originalSize;
 	for (int i = 0; i < originalSize; i++) {
-		array[i]->heapPriority = LARGE_NUM;
+		array[i]->distance = LARGE_NUM;
 		array[i]->heapIndex = i;
 	}
 }
@@ -31,24 +31,25 @@ Heap::~Heap() {
 int Heap::leftChild(int n) {
 	int index = 2 * n + 1;
 	if (index < size) {
-		return -1;
+		return index;
 	}
-	return index;
+	return -1;
 }
 
 int Heap::rightChild(int n) {
 	int index = 2 * n + 2;
 	if (index < size) {
-		return -1;
+		return index;
 	}
-	return index;
+	return -1;
 }
 
 int Heap::parent(int n) {
-	if (n < size) {
-		return -1;
+	int index = (n - 1) / 2;
+	if (n > 0) {
+		return index;
 	}
-	return n;
+	return -1;
 }
 
 void Heap::swap(City** first, City** second) {
@@ -63,7 +64,7 @@ void Heap::swap(City** first, City** second) {
 
 void Heap::pushUp(int index) {
 	while (parent(index) >= 0) {
-		if (array[index]->heapPriority < array[parent(index)]->heapPriority) {
+		if (array[index]->distance < array[parent(index)]->distance) {
 			swap(&array[parent(index)], &array[index]);
 			index = parent(index);
 			continue;
@@ -80,8 +81,8 @@ void Heap::pushDown(int index) {
 		leftChildIndex = leftChild(index);
 		//if both exist
 		if (rightChildIndex >= 0 && leftChildIndex >= 0) { 
-			if (array[leftChildIndex]->heapPriority < array[index]->heapPriority && array[rightChildIndex]->heapPriority < array[index]->heapPriority){
-				if (array[leftChildIndex]->heapPriority < array[rightChildIndex]->heapPriority) { //swap left if it's less than right child
+			if (array[leftChildIndex]->distance < array[index]->distance && array[rightChildIndex]->distance < array[index]->distance){
+				if (array[leftChildIndex]->distance < array[rightChildIndex]->distance) { //swap left if it's less than right child
 					swap(&array[index], &array[leftChildIndex]);
 					index = leftChildIndex;
 				} else { //swap right
@@ -91,12 +92,12 @@ void Heap::pushDown(int index) {
 				continue;
 			}	
 		}
-		if (leftChildIndex >= 0 && array[leftChildIndex]->heapPriority < array[index]->heapPriority) { //only left is less than parent
+		if (leftChildIndex >= 0 && array[leftChildIndex]->distance < array[index]->distance) { //only left is less than parent
 			swap(&array[index], &array[leftChildIndex]);
 			index = leftChildIndex;
 			continue;
 		}
-		if (rightChildIndex >= 0 && array[rightChildIndex]->heapPriority < array[index]->heapPriority) { //only right is less than parent
+		if (rightChildIndex >= 0 && array[rightChildIndex]->distance < array[index]->distance) { //only right is less than parent
 			swap(&array[index], &array[rightChildIndex]);
 			index = rightChildIndex;
 			continue;
@@ -106,6 +107,9 @@ void Heap::pushDown(int index) {
 }
 
 City* Heap::pop() {
+	if (!size) {
+		return nullptr;
+	}
 	City* pooper = array[0];
 	swap(&array[0], &array[size - 1]);
 	size = size - 1;
@@ -113,15 +117,43 @@ City* Heap::pop() {
 	return pooper;
 }
 
-void Heap::setRoot(int index) {
-	array[index]->heapPriority = 0;
-	swap(&array[0], &array[index]);
+
+void Heap::setDistance(int index, int newDistance) {
+	if (array[index]->distance < newDistance) {
+		return;
+	}
+	array[index]->distance = newDistance;
 	pushUp(index);
 }
 
 void Heap::printHeap() {
 	for (int i = 0; i < this->size; i++) {
-		cout << array[i]->name << " index: " << array[i]->heapIndex << endl;
+		cout << array[i]->name << " index: " << array[i]->heapIndex << " DISTANCE: " << array[i]->distance << endl;
 		cout << "---\n";
 	}
 }
+
+void Heap::search(City* start, City* end) {
+	resetHeap();
+	setDistance(start->heapIndex, 0);
+	City* current;
+	ConnectionNode* tempNode;
+
+	while (true) {
+		current = pop();
+		if (current == nullptr || current == end) {
+			break;
+		}
+		tempNode = current->neighbourList->head;
+			while (tempNode != nullptr) {
+			if (tempNode->road + array[current->heapIndex]->distance < array[tempNode->city->heapIndex]->distance) {
+				tempNode->city->previous = current;
+				setDistance(tempNode->city->heapIndex, tempNode->road + array[current->heapIndex]->distance);
+			}
+			tempNode = tempNode->next;
+		}
+	}
+	
+}
+
+
